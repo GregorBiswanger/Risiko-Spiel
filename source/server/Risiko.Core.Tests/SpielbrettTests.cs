@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Risiko.Core.Kontinente;
 
 namespace Risiko.Core.Tests
 {
@@ -38,16 +39,11 @@ namespace Risiko.Core.Tests
             var spieler1 = new Spieler("André", Farbe.Blau);
             var spieler2 = new Spieler("Gregor", Farbe.Rot);
 
-            var no = new Land("Nordeuropa");
+            var europa = new Europa();
+            var no = europa.Laender.Single(x => x.Name == "Nordeuropa");
+            var wo = europa.Laender.Single(x => x.Name == "Westeuropa");
             no.SetzeEinheitenUndBesetze(spieler1.Id, 2);
-            var wo = new Land("Westeuropa");
             wo.SetzeEinheitenUndBesetze(spieler2.Id, 2);
-
-            var europa = new Kontinent("Europa", 3, new List<Land>
-            {
-                no, 
-                wo
-            });
 
             var spielbrett = new Spielbrett();
             spielbrett.LadeSpielstand(new List<Spieler> { spieler1, spieler2 }, new List<Kontinent>{ europa }, spieler1);
@@ -62,16 +58,11 @@ namespace Risiko.Core.Tests
             var spieler1 = new Spieler("André", Farbe.Blau);
             var spieler2 = new Spieler("Gregor", Farbe.Rot);
 
-            var no = new Land("Nordeuropa");
+            var europa = new Europa();
+            var no = europa.Laender.Single(x => x.Name == "Nordeuropa");
+            var wo = europa.Laender.Single(x => x.Name == "Westeuropa");
             no.SetzeEinheitenUndBesetze(spieler1.Id, 2);
-            var wo = new Land("Westeuropa");
             wo.SetzeEinheitenUndBesetze(spieler2.Id, 2);
-
-            var europa = new Kontinent("Europa", 3, new List<Land>
-            {
-                no,
-                wo
-            });
 
             var spielbrett = new Spielbrett();
             spielbrett.LadeSpielstand(new List<Spieler> { spieler1, spieler2 }, new List<Kontinent> { europa }, spieler1);
@@ -87,22 +78,16 @@ namespace Risiko.Core.Tests
             var spieler1 = new Spieler("André", Farbe.Blau);
             var spieler2 = new Spieler("Gregor", Farbe.Rot);
 
+            var europa = new Europa();
             // Spieler 1 mit 2 Ländern
-            var no = new Land("Nordeuropa");
+            var no = europa.Laender.Single(x => x.Name == "Nordeuropa");
+            var gb = europa.Laender.Single(x => x.Name == "Großbritannien");
             no.SetzeEinheitenUndBesetze(spieler1.Id, 2);
-            var gb = new Land("Großbritannien");
             gb.SetzeEinheitenUndBesetze(spieler1.Id, 2);
 
             // Spieler 2 mit 1 Land
-            var wo = new Land("Westeuropa");
+            var wo = europa.Laender.Single(x => x.Name == "Westeuropa");
             wo.SetzeEinheitenUndBesetze(spieler2.Id, 2);
-
-            var europa = new Kontinent("Europa", 3, new List<Land>
-            {
-                no,
-                gb,
-                wo
-            });
 
             var spielbrett = new Spielbrett();
             spielbrett.LadeSpielstand(new List<Spieler> { spieler1, spieler2 }, new List<Kontinent> { europa }, spieler1);
@@ -118,34 +103,16 @@ namespace Risiko.Core.Tests
             var spieler1 = new Spieler("André", Farbe.Blau);
             var spieler2 = new Spieler("Gregor", Farbe.Rot);
 
-            var land1 = new Land("Land1");
-            land1.SetzeEinheitenUndBesetze(spieler1.Id, 1);
-            var land2 = new Land("Land2");
-            land2.SetzeEinheitenUndBesetze(spieler1.Id, 1);
-            var land3 = new Land("Land3");
-            land3.SetzeEinheitenUndBesetze(spieler1.Id, 1);
-            var land4 = new Land("Land4");
-            land4.SetzeEinheitenUndBesetze(spieler1.Id, 1);
-            var land5 = new Land("Land5");
-            land5.SetzeEinheitenUndBesetze(spieler1.Id, 1);
-            var land6 = new Land("Land6");
-            land6.SetzeEinheitenUndBesetze(spieler1.Id, 1);
+            var europa = new Europa();
 
-            var kontinent = new Kontinent("Kontinent", 3, new List<Land>
-            {
-                land1,
-                land2,
-                land3,
-                land4,
-                land5,
-                land6
-            });
+            foreach(var land in europa.Laender)
+                land.SetzeEinheitenUndBesetze(spieler1.Id, 1);
 
             var spielbrett = new Spielbrett();
-            spielbrett.LadeSpielstand(new List<Spieler> { spieler1, spieler2 }, new List<Kontinent> { kontinent }, spieler2);
+            spielbrett.LadeSpielstand(new List<Spieler> { spieler1, spieler2 }, new List<Kontinent> { europa }, spieler2);
             spielbrett.BeendeSpielzug();
             spielbrett.AktiverSpieler.Should().Be(spieler1);
-            spieler1.FreieEinheiten.Should().Be(6);
+            spieler1.FreieEinheiten.Should().Be(8);
         }
     }
 }
