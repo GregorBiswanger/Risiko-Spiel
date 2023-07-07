@@ -1,3 +1,4 @@
+using Risiko.Core.Kontinente;
 using System.Collections.Immutable;
 
 namespace Risiko.Core;
@@ -14,69 +15,7 @@ public class Spielbrett
     public void StarteSpiel(Spieler spieler, Spieler spieler2)
     {
         Spieler = ImmutableList.Create(spieler, spieler2);
-
-        var europa = new Kontinent("Europa", 5, new List<Land>
-        {
-            new("Island"),
-            new("Skandinavien"),
-            new("Russland"),
-            new("Großbritannien"),
-            new("Nordeuropa"),
-            new("Westeuropa"),
-            new("Südeuropa")
-        });
-        var afrika = new Kontinent("Afrika", 4, new List<Land>
-        {
-            new("Nordafrika"),
-            new("Ägypten"),
-            new("Ostafrika"),
-            new("Zentralafrika"),
-            new("Südafrika"),
-            new("Madagaskar")
-        });
-        var asien = new Kontinent("Asien", 7, new List<Land>
-        {
-            new("Ural"),
-            new("Sibirien"),
-            new("Jakutien"),
-            new("Kamtschatka"),
-            new("Irkutsk"),
-            new("Mongolei"),
-            new("Japan"),
-            new("China"),
-            new("Mittlerer Osten"),
-            new("Indien"),
-            new("Siam"),
-            new("Afghanistan")
-        });
-        var australien = new Kontinent("Australien", 3, new List<Land>
-        {
-            new("Indonesien"),
-            new("Neu-Guinea"),
-            new("West-Australien"),
-            new("Ost-Australien")
-        });
-        var suedamerika = new Kontinent("Südamerika", 3, new List<Land>
-        {
-            new("Venezuela"),
-            new("Peru"),
-            new("Brasilien"),
-            new("Argentinien")
-        });
-        var nordamerika = new Kontinent("Nordamerika", 6, new List<Land>
-        {
-            new("Alaska"),
-            new("Nordwest-Territorium"),
-            new("Grönland"),
-            new("Alberta"),
-            new("Quebec"),
-            new("Ontario"),
-            new("Westsstaaten"),
-            new("Oststaaten"),
-            new("Zentralamerika")
-        });
-
-        Kontinente = ImmutableList.Create(europa, afrika, asien, australien, suedamerika, nordamerika);
+        Kontinente = ImmutableList.Create<Kontinent>(new Europa(), new Afrika(), new Asien(), new Australien(), new Suedamerika(), new Nordamerika());
 
         if (Spieler.Count == 2)
         {
