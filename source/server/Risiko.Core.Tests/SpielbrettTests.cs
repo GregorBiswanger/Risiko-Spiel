@@ -126,6 +126,8 @@ namespace Risiko.Core.Tests
             var europa = new Europa();
             var nordEuropa = europa.Laender.Single(x => x.Name == "Nordeuropa");
             var westEuropa = europa.Laender.Single(x => x.Name == "Westeuropa");
+            westEuropa.AngrenzendeLaender.Add(nordEuropa);
+            nordEuropa.AngrenzendeLaender.Add(westEuropa);
             nordEuropa.SetzeEinheitenUndBesetze(spieler1.Id, 5);
             westEuropa.SetzeEinheitenUndBesetze(spieler2.Id, 2);
 
@@ -152,22 +154,84 @@ namespace Risiko.Core.Tests
             westEuropa.BesitzerSpielerId.Should().Be(spieler1.Id);
         }
 
-        //[Fact]
-        //public void Angriff_Angrenzendesland_NichtEingenommen()
-        //{
+        [Fact]
+        public void Angriff_Angrenzendesland_NichtEingenommen()
+        {
+            // Arrange            
+            var spieler1 = new Spieler("André", Farbe.Blau);
+            var spieler2 = new Spieler("Gregor", Farbe.Rot);
 
-        //}
+            var europa = new Europa();
+            var nordEuropa = europa.Laender.Single(x => x.Name == "Nordeuropa");
+            var westEuropa = europa.Laender.Single(x => x.Name == "Westeuropa");
+            westEuropa.AngrenzendeLaender.Add(nordEuropa);
+            nordEuropa.AngrenzendeLaender.Add(westEuropa);
+            nordEuropa.SetzeEinheitenUndBesetze(spieler1.Id, 5);
+            westEuropa.SetzeEinheitenUndBesetze(spieler2.Id, 2);
+
+            var spielbrett = new Spielbrett();
+            spielbrett.LadeSpielstand(new List<Spieler> { spieler1, spieler2 }, new List<Kontinent> { europa }, spieler2);
+
+            var angriff = new Angriff(new Wuerfel(WuerfelAugen.Eins),
+                new Wuerfel(WuerfelAugen.Eins),
+                new Wuerfel(WuerfelAugen.Eins));
+
+            var verteidigung = new Verteidigung(new Wuerfel(WuerfelAugen.Fuenf),
+                new Wuerfel(WuerfelAugen.Drei));
+
+            // Act
+            var result = nordEuropa.Angreifen(westEuropa, angriff, verteidigung);
+
+            // Assert
+            result.AngreiferVerluste.Should().Be(2);
+            result.VerteidigerVerluste.Should().Be(0);
+            result.WurdeEingenommen.Should().Be(false);
+
+            nordEuropa.Einheiten.Should().Be(3);
+            westEuropa.Einheiten.Should().Be(2);
+            westEuropa.BesitzerSpielerId.Should().Be(spieler2.Id);
+        }
+
+        [Fact]
+        public void Angriff_Angrenzendesland_NichtAngrenzend()
+        {
+            // Arrange            
+            var spieler1 = new Spieler("André", Farbe.Blau);
+            var spieler2 = new Spieler("Gregor", Farbe.Rot);
+
+            var europa = new Europa();
+            var grossbritannien = europa.Laender.Single(x => x.Name == "Großbritannien");
+            var russland = europa.Laender.Single(x => x.Name == "Russland");
+            grossbritannien.SetzeEinheitenUndBesetze(spieler1.Id, 5);
+            russland.SetzeEinheitenUndBesetze(spieler2.Id, 2);
+
+            var spielbrett = new Spielbrett();
+            spielbrett.LadeSpielstand(new List<Spieler> { spieler1, spieler2 }, new List<Kontinent> { europa }, spieler2);
+
+            var angriff = new Angriff(new Wuerfel(WuerfelAugen.Eins),
+                new Wuerfel(WuerfelAugen.Eins),
+                new Wuerfel(WuerfelAugen.Eins));
+
+            var verteidigung = new Verteidigung(new Wuerfel(WuerfelAugen.Fuenf),
+                new Wuerfel(WuerfelAugen.Drei));
+
+            // Assert
+            Assert.Throws<AngegriffenesLandNichtAngrenzendException>(() =>
+            {
+                // Act
+                var result = grossbritannien.Angreifen(russland, angriff, verteidigung);
+            });
+        }
 
         //[Fact]
         //public void Angriff_Angrenzendesland_FalscherSpielerAmZug()
         //{
 
         //}
-        
-        //[Fact]
-        //public void Angriff_Angrenzendesland_NichtAngrenzend()
-        //{
 
-        //}
+        // Todo:
+        // - Spiel gewonnen logik
+        // - Variabler angriff
+        // - Einheiten verschieben
     }
 }

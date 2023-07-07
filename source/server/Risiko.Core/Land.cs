@@ -5,6 +5,7 @@ public class Land
     public string Name { get; }
     public Guid BesitzerSpielerId { get; private set; } = Guid.Empty;
     public uint Einheiten { get; private set; }
+    public List<Land> AngrenzendeLaender { get; } = new();
 
     public Land(string name)
     {
@@ -19,6 +20,11 @@ public class Land
 
     public AngriffErgebnis Angreifen(Land verteidiger, Angriff angriff, Verteidigung verteidigung)
     {
+        if(!AngrenzendeLaender.Contains(verteidiger))
+        {
+            throw new AngegriffenesLandNichtAngrenzendException(this, verteidiger);
+        }
+        
         var angreiferVerluste = 0;
         var verteidigerVerluste = 0;
         var eingenommen = false;
