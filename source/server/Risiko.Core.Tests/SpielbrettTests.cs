@@ -1,3 +1,4 @@
+using System.Xml.Serialization;
 using FluentAssertions;
 using Risiko.Core.Kontinente;
 
@@ -114,5 +115,59 @@ namespace Risiko.Core.Tests
             spielbrett.AktiverSpieler.Should().Be(spieler1);
             spieler1.FreieEinheiten.Should().Be(8);
         }
+
+        [Fact]
+        public void Angriff_Angrenzendesland_LandEingenommen()
+        {
+            // Arrange            
+            var spieler1 = new Spieler("André", Farbe.Blau);
+            var spieler2 = new Spieler("Gregor", Farbe.Rot);
+
+            var europa = new Europa();
+            var nordEuropa = europa.Laender.Single(x => x.Name == "Nordeuropa");
+            var westEuropa = europa.Laender.Single(x => x.Name == "Westeuropa");
+            nordEuropa.SetzeEinheitenUndBesetze(spieler1.Id, 5);
+            westEuropa.SetzeEinheitenUndBesetze(spieler2.Id, 2);
+
+            var spielbrett = new Spielbrett();
+            spielbrett.LadeSpielstand(new List<Spieler> { spieler1, spieler2 }, new List<Kontinent> { europa }, spieler2);
+
+            var angriff = new Angriff(new Wuerfel(WuerfelAugen.Sechs),
+                new Wuerfel(WuerfelAugen.Vier),
+                new Wuerfel(WuerfelAugen.Eins));
+
+            var verteidigung = new Verteidigung(new Wuerfel(WuerfelAugen.Fuenf),
+                new Wuerfel(WuerfelAugen.Drei));
+
+            // Act
+            var result = nordEuropa.Angreifen(westEuropa, angriff, verteidigung);
+
+            // Assert
+            result.AngreiferVerluste.Should().Be(0);
+            result.VerteidigerVerluste.Should().Be(2);
+            result.WurdeEingenommen.Should().Be(true);
+
+            nordEuropa.Einheiten.Should().Be(4);
+            westEuropa.Einheiten.Should().Be(1);
+            westEuropa.BesitzerSpielerId.Should().Be(spieler1.Id);
+        }
+
+        //[Fact]
+        //public void Angriff_Angrenzendesland_NichtEingenommen()
+        //{
+
+        //}
+
+        //[Fact]
+        //public void Angriff_Angrenzendesland_FalscherSpielerAmZug()
+        //{
+
+        //}
+        
+        //[Fact]
+        //public void Angriff_Angrenzendesland_NichtAngrenzend()
+        //{
+
+        //}
     }
 }
